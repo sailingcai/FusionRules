@@ -24,32 +24,21 @@ It is designed to plug into any Python data pipeline that can provide Apache Arr
 
 ## Architecture Philosophy
 
-The core idea behind `FusionArbiter` is to **decouple the “data source” from the “analysis engine”**.
+The core idea behind `FusionRules` is to **decouple the “data source” from the “analysis engine”**.
 
 The engine API expects a dictionary of `pyarrow.Table` objects. This allows it to be embedded into any data pipeline that can provide Arrow tables.
-
-```text
- [Input Source]      [Adapter]                [Arrow Data]              [FusionArbiter Core]     [Final Result]
- (Kafka,             (e.g.,                   (dict[str,                (DataFusion              ("confirm",
-  HTTP,               JSON-to-Arrow            pyarrow.Table])           + asteval)                "suspected",
-  gRPC,               Converter)                                                                  "no_match")
-  File, etc.)
-      |                    |                        |                          |                         |
-      +------------------->+------------------------+-------------------------->+------------------------>+
-```
 
 Typical flow:
 
 1.  Your system produces data (Kafka, HTTP API, gRPC, files, etc.).
 2.  An adapter converts raw data (JSON, binary, etc.) into pyarrow.Table objects.
-3.  These tables are passed as a dictionary into the FusionArbiter core.
-4.  FusionArbiter runs all configured rules and returns a final decision such as "confirm", "review\_required", "no\_match", etc.
+3.  FusionRules runs all configured rules and returns a final decision such as "confirm", "review\_required", "no\_match", etc.
 
 -----
 
 ## Rule DSL Syntax
 
-All logic in FusionArbiter is driven by YAML rule files.
+All logic in FusionRules is driven by YAML rule files.
 
 Each rule consists of four key sections:
 
